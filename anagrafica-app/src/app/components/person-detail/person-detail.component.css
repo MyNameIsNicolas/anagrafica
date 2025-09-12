@@ -1,0 +1,293 @@
+.person-detail-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header Card */
+.header-card {
+  margin-bottom: 0;
+}
+
+.person-avatar {
+  background-color: #3f51b5;
+  color: white;
+}
+
+.header-card mat-card-actions {
+  margin-bottom: 0;
+}
+
+/* Info Card */
+.info-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #fafafa;
+  border-radius: 8px;
+}
+
+.info-icon {
+  color: #666;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.info-label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.87);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+/* Contacts Card */
+.contacts-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact-item {
+  margin-bottom: 1rem;
+}
+
+.contact-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.contact-value {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.primary-badge {
+  background-color: #4caf50;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+/* Addresses Card */
+.addresses-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.addresses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.address-item {
+  margin: 0;
+}
+
+.address-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  margin-bottom: 0.75rem;
+}
+
+.address-value {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.address-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.address-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.address-detail-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #666;
+}
+
+/* Metadata Card */
+.metadata-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.metadata-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #fafafa;
+  border-radius: 8px;
+}
+
+.metadata-icon {
+  color: #666;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.metadata-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.metadata-label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metadata-value {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.87);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+/* No Data */
+.no-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  color: rgba(0, 0, 0, 0.6);
+  font-style: italic;
+}
+
+.no-data mat-icon {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.loading-card {
+  text-align: center;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+}
+
+/* Error */
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.error-card {
+  text-align: center;
+  max-width: 400px;
+}
+
+.error-card mat-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .person-detail-container {
+    gap: 16px;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .addresses-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .metadata-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .header-card mat-card-actions {
+    justify-content: center;
+  }
+  
+  .loading-content,
+  .no-data {
+    padding: 16px;
+  }
+}

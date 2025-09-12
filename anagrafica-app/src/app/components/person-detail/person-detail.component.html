@@ -1,0 +1,239 @@
+<div class="person-detail-container" *ngIf="person$ | async as person; else loading">
+  <!-- Header Card -->
+  <mat-card class="header-card">
+    <mat-card-header>
+      <div mat-card-avatar class="person-avatar">
+        <mat-icon>person</mat-icon>
+      </div>
+      <mat-card-title>{{ person.firstName }} {{ person.lastName }}</mat-card-title>
+      <mat-card-subtitle>Dettagli persona</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-actions align="end">
+      <button mat-raised-button color="primary" (click)="editPerson()">
+        <mat-icon>edit</mat-icon>
+        Modifica
+      </button>
+      <button mat-stroked-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Indietro
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- Personal Information Card -->
+  <mat-card class="info-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>info</mat-icon>
+        Informazioni Personali
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="info-grid">
+        <div class="info-item">
+          <mat-icon class="info-icon">badge</mat-icon>
+          <div class="info-content">
+            <span class="info-label">Nome</span>
+            <span class="info-value">{{ person.firstName }}</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <mat-icon class="info-icon">badge</mat-icon>
+          <div class="info-content">
+            <span class="info-label">Cognome</span>
+            <span class="info-value">{{ person.lastName }}</span>
+          </div>
+        </div>
+        <div class="info-item" *ngIf="person.dateOfBirth">
+          <mat-icon class="info-icon">cake</mat-icon>
+          <div class="info-content">
+            <span class="info-label">Data di Nascita</span>
+            <span class="info-value">{{ person.dateOfBirth | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+        <div class="info-item" *ngIf="person.fiscalCode">
+          <mat-icon class="info-icon">credit_card</mat-icon>
+          <div class="info-content">
+            <span class="info-label">Codice Fiscale</span>
+            <span class="info-value">{{ person.fiscalCode }}</span>
+          </div>
+        </div>
+        <div class="info-item" *ngIf="person.gender">
+          <mat-icon class="info-icon">person</mat-icon>
+          <div class="info-content">
+            <span class="info-label">Genere</span>
+            <span class="info-value">{{ person.gender === 'M' ? 'Maschio' : person.gender === 'F' ? 'Femmina' : 'Altro' }}</span>
+          </div>
+        </div>
+        <div class="info-item" *ngIf="person.profession">
+          <mat-icon class="info-icon">work</mat-icon>
+          <div class="info-content">
+            <span class="info-label">Professione</span>
+            <span class="info-value">{{ person.profession }}</span>
+          </div>
+        </div>
+        <div class="info-item" *ngIf="person.notes">
+          <mat-icon class="info-icon">note</mat-icon>
+          <div class="info-content">
+            <span class="info-label">Note</span>
+            <span class="info-value">{{ person.notes }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Contacts Card -->
+  <mat-card class="contacts-card" *ngIf="person.contacts.length > 0">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>contact_phone</mat-icon>
+        Contatti
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item *ngFor="let contact of person.contacts; let last = last">
+          <mat-icon matListItemIcon>{{ getContactIcon(contact.type) }}</mat-icon>
+          <div matListItemTitle>{{ getContactTypeLabel(contact.type) }}</div>
+          <div matListItemLine>{{ contact.value }}</div>
+          <span *ngIf="contact.isPrimary" class="primary-badge">Principale</span>
+          <mat-divider *ngIf="!last"></mat-divider>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Empty Contacts Card -->
+  <mat-card class="contacts-card" *ngIf="person.contacts.length === 0">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>contact_phone</mat-icon>
+        Contatti
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="no-data">
+        <mat-icon>info</mat-icon>
+        <p>Nessun contatto disponibile</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Addresses Card -->
+  <mat-card class="addresses-card" *ngIf="person.addresses.length > 0">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>location_on</mat-icon>
+        Indirizzi
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="addresses-grid">
+        <mat-card class="address-item" *ngFor="let address of person.addresses">
+          <mat-card-header>
+            <mat-card-title class="address-type">
+              <mat-icon>{{ getAddressIcon(address.type) }}</mat-icon>
+              {{ getAddressTypeLabel(address.type) }}
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="address-details">
+              <div class="address-line">
+                <mat-icon class="address-detail-icon">home</mat-icon>
+                {{ address.street }}
+              </div>
+              <div class="address-line">
+                <mat-icon class="address-detail-icon">location_city</mat-icon>
+                {{ address.postalCode }} {{ address.city }} ({{ address.province }})
+              </div>
+              <div class="address-line">
+                <mat-icon class="address-detail-icon">public</mat-icon>
+                {{ address.country }}
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Empty Addresses Card -->
+  <mat-card class="addresses-card" *ngIf="person.addresses.length === 0">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>location_on</mat-icon>
+        Indirizzi
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="no-data">
+        <mat-icon>info</mat-icon>
+        <p>Nessun indirizzo disponibile</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Metadata Card -->
+  <mat-card class="metadata-card" *ngIf="person.createdAt || person.updatedAt">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>schedule</mat-icon>
+        Metadati
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="metadata-grid">
+        <div class="metadata-item" *ngIf="person.createdAt">
+          <mat-icon class="metadata-icon">add_circle</mat-icon>
+          <div class="metadata-content">
+            <span class="metadata-label">Creato il</span>
+            <span class="metadata-value">{{ person.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+        <div class="metadata-item" *ngIf="person.updatedAt">
+          <mat-icon class="metadata-icon">edit</mat-icon>
+          <div class="metadata-content">
+            <span class="metadata-label">Ultimo aggiornamento</span>
+            <span class="metadata-value">{{ person.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-card class="loading-card">
+      <mat-card-content>
+        <div class="loading-content">
+          <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+          <p>Caricamento in corso...</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</ng-template>
+
+<ng-template #error>
+  <div class="error-container">
+    <mat-card class="error-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon color="warn">error</mat-icon>
+          Errore
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>La persona richiesta non esiste o è stata eliminata.</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Torna alla lista
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</ng-template>

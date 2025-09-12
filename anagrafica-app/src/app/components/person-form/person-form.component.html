@@ -1,0 +1,290 @@
+<div class="person-form-container">
+  <!-- Header Card -->
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
+        {{ isEditMode ? 'Modifica Persona' : 'Nuova Persona' }}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-actions>
+      <button mat-stroked-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Indietro
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <form [formGroup]="personForm" (ngSubmit)="onSubmit()" class="person-form">
+    <!-- Informazioni Personali -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>person</mat-icon>
+          Informazioni Personali
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Nome *</mat-label>
+            <input matInput formControlName="firstName" placeholder="Inserisci il nome">
+            <mat-error *ngIf="isFieldInvalid('firstName')">
+              {{ getFieldError('firstName') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Cognome *</mat-label>
+            <input matInput formControlName="lastName" placeholder="Inserisci il cognome">
+            <mat-error *ngIf="isFieldInvalid('lastName')">
+              {{ getFieldError('lastName') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Data di Nascita</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="dateOfBirth">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Genere</mat-label>
+            <mat-select formControlName="gender">
+              <mat-option value="">Seleziona genere</mat-option>
+              <mat-option value="M">Maschio</mat-option>
+              <mat-option value="F">Femmina</mat-option>
+              <mat-option value="Other">Altro</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Codice Fiscale</mat-label>
+            <input matInput formControlName="fiscalCode" placeholder="RSSMRA85C15H501Z" style="text-transform: uppercase">
+            <mat-error *ngIf="isFieldInvalid('fiscalCode')">
+              {{ getFieldError('fiscalCode') }}
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Professione</mat-label>
+            <input matInput formControlName="profession" placeholder="Inserisci la professione">
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="form-field full-width">
+          <mat-label>Note</mat-label>
+          <textarea matInput formControlName="notes" rows="3" placeholder="Note aggiuntive..."></textarea>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Indirizzi -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>location_on</mat-icon>
+          Indirizzi
+        </mat-card-title>
+        <div class="spacer"></div>
+        <button mat-stroked-button type="button" (click)="addAddress()">
+          <mat-icon>add</mat-icon>
+          Aggiungi Indirizzo
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <div formArrayName="addresses">
+          <mat-expansion-panel *ngFor="let address of addresses.controls; let i = index" 
+                               [formGroupName]="i" 
+                               class="address-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon>home</mat-icon>
+                Indirizzo {{ i + 1 }}
+              </mat-panel-title>
+              <mat-panel-description>
+                {{ address.get('street')?.value || 'Nuovo indirizzo' }}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="panel-content">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field flex-2">
+                  <mat-label>Via/Indirizzo *</mat-label>
+                  <input matInput formControlName="street" placeholder="Via Roma 123">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Tipo</mat-label>
+                  <mat-select formControlName="type">
+                    <mat-option value="home">Casa</mat-option>
+                    <mat-option value="work">Lavoro</mat-option>
+                    <mat-option value="other">Altro</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>CAP *</mat-label>
+                  <input matInput formControlName="postalCode" placeholder="20100">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="form-field flex-2">
+                  <mat-label>Città *</mat-label>
+                  <input matInput formControlName="city" placeholder="Milano">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Provincia *</mat-label>
+                  <input matInput formControlName="province" placeholder="MI">
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="outline" class="form-field full-width">
+                <mat-label>Paese *</mat-label>
+                <input matInput formControlName="country" placeholder="Italia">
+              </mat-form-field>
+
+              <div class="panel-actions">
+                <button mat-button color="warn" type="button" 
+                        (click)="removeAddress(i)"
+                        [disabled]="addresses.length === 1">
+                  <mat-icon>delete</mat-icon>
+                  Rimuovi
+                </button>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </div>
+
+        <div *ngIf="addresses.length === 0" class="no-items">
+          <div class="no-items-content">
+            <mat-icon>location_off</mat-icon>
+            <p>Nessun indirizzo aggiunto</p>
+            <button mat-raised-button color="primary" type="button" (click)="addAddress()">
+              <mat-icon>add</mat-icon>
+              Aggiungi primo indirizzo
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Contatti -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>contact_phone</mat-icon>
+          Contatti
+        </mat-card-title>
+        <div class="spacer"></div>
+        <button mat-stroked-button type="button" (click)="addContact()">
+          <mat-icon>add</mat-icon>
+          Aggiungi Contatto
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <div formArrayName="contacts">
+          <mat-expansion-panel *ngFor="let contact of contacts.controls; let i = index" 
+                               [formGroupName]="i" 
+                               class="contact-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon>{{ getContactIcon(contact.get('type')?.value) }}</mat-icon>
+                Contatto {{ i + 1 }}
+              </mat-panel-title>
+              <mat-panel-description>
+                {{ contact.get('value')?.value || 'Nuovo contatto' }}
+                <mat-chip *ngIf="contact.get('isPrimary')?.value" class="primary-chip">Principale</mat-chip>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="panel-content">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Tipo *</mat-label>
+                  <mat-select formControlName="type">
+                    <mat-option value="email">
+                      <mat-icon>email</mat-icon>
+                      Email
+                    </mat-option>
+                    <mat-option value="phone">
+                      <mat-icon>phone</mat-icon>
+                      Telefono
+                    </mat-option>
+                    <mat-option value="mobile">
+                      <mat-icon>smartphone</mat-icon>
+                      Cellulare
+                    </mat-option>
+                    <mat-option value="fax">
+                      <mat-icon>print</mat-icon>
+                      Fax
+                    </mat-option>
+                    <mat-option value="other">
+                      <mat-icon>contact_support</mat-icon>
+                      Altro
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="form-field flex-2">
+                  <mat-label>Valore *</mat-label>
+                  <input matInput formControlName="value" placeholder="mario.rossi@email.com">
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field flex-2">
+                  <mat-label>Etichetta</mat-label>
+                  <input matInput formControlName="label" placeholder="Email personale">
+                </mat-form-field>
+                <div class="checkbox-field">
+                  <mat-checkbox formControlName="isPrimary">
+                    Contatto principale
+                  </mat-checkbox>
+                </div>
+              </div>
+
+              <div class="panel-actions">
+                <button mat-button color="warn" type="button" 
+                        (click)="removeContact(i)"
+                        [disabled]="contacts.length === 1">
+                  <mat-icon>delete</mat-icon>
+                  Rimuovi
+                </button>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </div>
+
+        <div *ngIf="contacts.length === 0" class="no-items">
+          <div class="no-items-content">
+            <mat-icon>contact_phone_off</mat-icon>
+            <p>Nessun contatto aggiunto</p>
+            <button mat-raised-button color="primary" type="button" (click)="addContact()">
+              <mat-icon>add</mat-icon>
+              Aggiungi primo contatto
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Azioni -->
+    <mat-card class="form-actions">
+      <mat-card-actions align="end">
+        <button mat-stroked-button type="button" (click)="goBack()">
+          <mat-icon>cancel</mat-icon>
+          Annulla
+        </button>
+        <button mat-raised-button color="primary" type="submit" 
+                [disabled]="personForm.invalid || isSubmitting">
+          <mat-icon>{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
+          {{ isSubmitting ? 'Salvataggio...' : (isEditMode ? 'Aggiorna' : 'Salva') }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>
