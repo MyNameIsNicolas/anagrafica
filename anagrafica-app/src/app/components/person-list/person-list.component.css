@@ -27,6 +27,32 @@
   margin-top: 4px;
 }
 
+.search-card {
+  margin-bottom: 0;
+}
+
+.search-content {
+  padding: 16px !important;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-field {
+  flex: 1;
+  margin: 0;
+}
+
+.add-button {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  min-height: 48px;
+}
+
 .table-card {
   padding: 0;
   overflow: hidden;
@@ -46,11 +72,62 @@
 }
 
 .actions-cell {
-  width: 140px;
+  width: 100px;
+  padding: 8px !important;
 }
 
-.actions-cell button {
-  margin-right: 4px;
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.quick-action {
+  transition: all 0.2s ease;
+}
+
+.quick-action:hover {
+  transform: scale(1.1);
+  background-color: rgba(63, 81, 181, 0.1);
+}
+
+.menu-trigger {
+  transition: all 0.2s ease;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.menu-trigger:hover {
+  color: rgba(0, 0, 0, 0.87);
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Menu Styling */
+::ng-deep .actions-menu {
+  margin-top: 8px;
+}
+
+::ng-deep .actions-menu .mat-mdc-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  min-height: 48px;
+  transition: background-color 0.2s ease;
+}
+
+::ng-deep .actions-menu .mat-mdc-menu-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+::ng-deep .actions-menu .mat-mdc-menu-item mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+::ng-deep .actions-menu .mat-mdc-menu-item span {
+  font-weight: 500;
 }
 
 .no-data-text {
@@ -115,11 +192,26 @@ mat-chip {
   }
   
   .actions-cell {
-    width: 120px;
+    width: 80px;
+    padding: 4px !important;
   }
   
-  .actions-cell button {
-    margin-right: 2px;
+  .action-buttons {
+    gap: 2px;
+  }
+  
+  .quick-action,
+  .menu-trigger {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+  
+  .quick-action mat-icon,
+  .menu-trigger mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
   }
   
   .no-data-content {

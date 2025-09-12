@@ -325,3 +325,145 @@ body {
 }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Modern Material Design Overrides */
+.mat-mdc-card {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  transition: box-shadow 0.3s ease !important;
+}
+
+.mat-mdc-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+.mat-mdc-form-field {
+  font-family: Roboto, "Helvetica Neue", sans-serif !important;
+}
+
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  border-radius: 8px !important;
+}
+
+.mat-mdc-button {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+}
+
+.mat-mdc-raised-button {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.mat-mdc-raised-button:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.mat-mdc-fab {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.mat-mdc-fab:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Modern Input Fields */
+.mat-mdc-form-field-outline {
+  border-radius: 8px !important;
+}
+
+.mat-mdc-form-field-outline-thick {
+  border-width: 2px !important;
+}
+
+/* Modern Card Headers */
+.mat-mdc-card-header {
+  padding: 20px 24px 16px 24px !important;
+}
+
+.mat-mdc-card-content {
+  padding: 0 24px 20px 24px !important;
+}
+
+.mat-mdc-card-actions {
+  padding: 16px 24px 20px 24px !important;
+}
+
+/* Modern Table */
+.mat-mdc-table {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.mat-mdc-header-row {
+  background-color: #f8f9fa !important;
+}
+
+.mat-mdc-row:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Force immediate styling for newly created expansion panels */
+.mat-expansion-panel {
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+  border: 1px solid #e0e0e0 !important;
+  background: white !important;
+  margin-bottom: 16px !important;
+  transition: all 0.3s ease !important;
+  /* Force immediate rendering */
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.mat-expansion-panel-header {
+  background: #fafafa !important;
+  border-radius: 8px 8px 0 0 !important;
+  padding: 16px !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+  transition: all 0.3s ease !important;
+  /* Ensure immediate visibility */
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.mat-expansion-panel-header:hover {
+  background: #f0f0f0 !important;
+}
+
+.mat-expansion-panel-header-title {
+  font-weight: 500 !important;
+  color: #333 !important;
+}
+
+.mat-expansion-panel-header-description {
+  color: #666 !important;
+}
+
+/* Specific styling for dynamically added panels */
+.address-panel .mat-expansion-panel,
+.contact-panel .mat-expansion-panel {
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+  border: 1px solid #e0e0e0 !important;
+  background: white !important;
+  margin-bottom: 16px !important;
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  animation: fadeInPanel 0.3s ease-in-out;
+}
+
+.address-panel, .contact-panel {
+  animation: fadeInPanel 0.3s ease-in-out;
+}
+
+@keyframes fadeInPanel {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

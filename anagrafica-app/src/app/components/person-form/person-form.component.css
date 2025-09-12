@@ -71,11 +71,52 @@
 .address-panel,
 .contact-panel {
   margin-bottom: 16px;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+  transition: all 0.3s ease !important;
+  animation: fadeInPanel 0.3s ease-in-out;
+  /* Force immediate modern styling */
+  border: 1px solid #e0e0e0 !important;
+  background: white !important;
 }
 
 .address-panel:last-child,
 .contact-panel:last-child {
   margin-bottom: 0;
+}
+
+.address-panel:hover,
+.contact-panel:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+}
+
+/* Ensure immediate styling for dynamically created panels */
+.address-panel .mat-expansion-panel,
+.contact-panel .mat-expansion-panel {
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+  border: 1px solid #e0e0e0 !important;
+  background: white !important;
+  margin-bottom: 16px !important;
+}
+
+.address-panel .mat-expansion-panel-header,
+.contact-panel .mat-expansion-panel-header {
+  background: #fafafa !important;
+  border-radius: 8px 8px 0 0 !important;
+  padding: 16px !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+@keyframes fadeInPanel {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .panel-content {

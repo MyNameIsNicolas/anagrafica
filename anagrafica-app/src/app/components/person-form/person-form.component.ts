@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChildren, QueryList, AfterViewInit } from '@angular/core';
+import { MatExpansionPanel } from '@angular/material/expansion';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PersonService } from '../../services';
@@ -9,17 +10,20 @@ import { Person, Address, Contact } from '../../models';
   templateUrl: './person-form.component.html',
   styleUrls: ['./person-form.component.css']
 })
-export class PersonFormComponent implements OnInit {
+export class PersonFormComponent implements OnInit, AfterViewInit {
   personForm: FormGroup;
   isEditMode = false;
   personId: number | null = null;
   isSubmitting = false;
 
+  @ViewChildren(MatExpansionPanel) expansionPanels!: QueryList<MatExpansionPanel>;
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private personService: PersonService
+    private personService: PersonService,
+    private cdr: ChangeDetectorRef
   ) {
     this.personForm = this.createForm();
   }
@@ -110,8 +114,28 @@ export class PersonFormComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    // Monitor changes to expansion panels
+    this.expansionPanels.changes.subscribe(() => {
+      this.cdr.detectChanges();
+    });
+  }
+
   addAddress(): void {
     this.addresses.push(this.createAddressGroup());
+    // Force immediate change detection and re-render
+    this.cdr.detectChanges();
+    
+    // Additional timeout to ensure Material Design styles are applied
+    setTimeout(() => {
+      this.cdr.detectChanges();
+      // Force re-initialization of newly created expansion panels
+      this.expansionPanels.forEach(panel => {
+        if (panel._body) {
+          panel._body.nativeElement.style.display = 'block';
+        }
+      });
+    }, 50);
   }
 
   removeAddress(index: number): void {
@@ -120,6 +144,19 @@ export class PersonFormComponent implements OnInit {
 
   addContact(): void {
     this.contacts.push(this.createContactGroup());
+    // Force immediate change detection and re-render
+    this.cdr.detectChanges();
+    
+    // Additional timeout to ensure Material Design styles are applied
+    setTimeout(() => {
+      this.cdr.detectChanges();
+      // Force re-initialization of newly created expansion panels
+      this.expansionPanels.forEach(panel => {
+        if (panel._body) {
+          panel._body.nativeElement.style.display = 'block';
+        }
+      });
+    }, 50);
   }
 
   removeContact(index: number): void {
