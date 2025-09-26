@@ -291,6 +291,40 @@ export class PersonService {
             expiryDate: new Date('2028-01-15'),
             isActive: true,
             createdAt: new Date('2023-01-15')
+          },
+          {
+            id: 4,
+            personId: 1,
+            name: 'Passaporto',
+            type: DocumentType.PASSPORT,
+            fileName: 'passaporto_mario_rossi.pdf',
+            uploadDate: new Date('2023-02-20'),
+            expiryDate: new Date('2033-02-20'),
+            isActive: true,
+            createdAt: new Date('2023-02-20')
+          },
+          {
+            id: 5,
+            personId: 1,
+            name: 'Patente di Guida',
+            type: DocumentType.DRIVING_LICENSE,
+            fileName: 'patente_mario_rossi.pdf',
+            uploadDate: new Date('2023-03-10'),
+            expiryDate: new Date('2033-03-10'),
+            isActive: true,
+            createdAt: new Date('2023-03-10')
+          },
+          {
+            id: 6,
+            personId: 1,
+            name: 'Contratto di Lavoro',
+            type: DocumentType.CONTRACT,
+            fileName: 'contratto_mario_rossi.pdf',
+            uploadDate: new Date('2023-01-01'),
+            expiryDate: new Date('2025-12-31'),
+            description: 'Contratto a tempo indeterminato',
+            isActive: true,
+            createdAt: new Date('2023-01-01')
           }
         ],
         relationships: [],
@@ -344,6 +378,51 @@ export class PersonService {
             expiryDate: new Date('2025-02-10'),
             isActive: true,
             createdAt: new Date('2023-02-10')
+          },
+          {
+            id: 7,
+            personId: 2,
+            name: 'Carta d\'Identità',
+            type: DocumentType.IDENTITY_CARD,
+            fileName: 'carta_identita_giulia_bianchi.pdf',
+            uploadDate: new Date('2023-01-20'),
+            expiryDate: new Date('2028-01-20'),
+            isActive: true,
+            createdAt: new Date('2023-01-20')
+          },
+          {
+            id: 8,
+            personId: 2,
+            name: 'Certificato di Laurea',
+            type: DocumentType.CERTIFICATE,
+            fileName: 'laurea_giulia_bianchi.pdf',
+            uploadDate: new Date('2023-03-15'),
+            description: 'Laurea in Giurisprudenza',
+            isActive: true,
+            createdAt: new Date('2023-03-15')
+          },
+          {
+            id: 9,
+            personId: 2,
+            name: 'Iscrizione Albo Avvocati',
+            type: DocumentType.CERTIFICATE,
+            fileName: 'albo_avvocati_giulia_bianchi.pdf',
+            uploadDate: new Date('2023-04-01'),
+            expiryDate: new Date('2024-12-31'),
+            description: 'Certificato di iscrizione all\'Albo degli Avvocati',
+            isActive: true,
+            createdAt: new Date('2023-04-01')
+          },
+          {
+            id: 10,
+            personId: 2,
+            name: 'Fattura Consulenza',
+            type: DocumentType.INVOICE,
+            fileName: 'fattura_001_giulia_bianchi.pdf',
+            uploadDate: new Date('2023-05-10'),
+            description: 'Fattura per consulenza legale',
+            isActive: true,
+            createdAt: new Date('2023-05-10')
           }
         ],
         relationships: [],
@@ -397,6 +476,62 @@ export class PersonService {
             expiryDate: new Date('2024-12-31'),
             isActive: true,
             createdAt: new Date('2023-03-05')
+          },
+          {
+            id: 11,
+            personId: 3,
+            name: 'Carta d\'Identità',
+            type: DocumentType.IDENTITY_CARD,
+            fileName: 'carta_identita_luca_verdi.pdf',
+            uploadDate: new Date('2023-01-10'),
+            expiryDate: new Date('2028-01-10'),
+            isActive: true,
+            createdAt: new Date('2023-01-10')
+          },
+          {
+            id: 12,
+            personId: 3,
+            name: 'Laurea in Medicina',
+            type: DocumentType.CERTIFICATE,
+            fileName: 'laurea_medicina_luca_verdi.pdf',
+            uploadDate: new Date('2023-02-15'),
+            description: 'Laurea in Medicina e Chirurgia',
+            isActive: true,
+            createdAt: new Date('2023-02-15')
+          },
+          {
+            id: 13,
+            personId: 3,
+            name: 'Iscrizione Ordine Medici',
+            type: DocumentType.CERTIFICATE,
+            fileName: 'ordine_medici_luca_verdi.pdf',
+            uploadDate: new Date('2023-03-01'),
+            expiryDate: new Date('2024-12-31'),
+            description: 'Certificato di iscrizione all\'Ordine dei Medici',
+            isActive: true,
+            createdAt: new Date('2023-03-01')
+          },
+          {
+            id: 14,
+            personId: 3,
+            name: 'Contratto Ospedale',
+            type: DocumentType.CONTRACT,
+            fileName: 'contratto_ospedale_luca_verdi.pdf',
+            uploadDate: new Date('2023-01-15'),
+            expiryDate: new Date('2025-01-15'),
+            description: 'Contratto di lavoro con l\'ospedale',
+            isActive: true,
+            createdAt: new Date('2023-01-15')
+          },
+          {
+            id: 15,
+            personId: 3,
+            name: 'Codice Fiscale',
+            type: DocumentType.FISCAL_CODE,
+            fileName: 'codice_fiscale_luca_verdi.pdf',
+            uploadDate: new Date('2023-01-05'),
+            isActive: true,
+            createdAt: new Date('2023-01-05')
           }
         ],
         relationships: [],

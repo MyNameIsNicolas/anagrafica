@@ -1,17 +1,84 @@
 <div class="document-manager">
   <div class="header-section">
-    <h3>Archivio Documentale</h3>
+    <h3>
+      Archivio Documentale
+      <span *ngIf="personName" class="person-name"> - {{ personName }}</span>
+    </h3>
     <div class="upload-section">
       <input #fileInput type="file" (change)="onFileSelected($event)" style="display: none;" 
              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-      <button mat-raised-button color="primary" (click)="fileInput.click()">
+      <button mat-raised-button color="primary" (click)="fileInput.click()" [disabled]="loading">
         <mat-icon>upload_file</mat-icon>
         Carica Documento
       </button>
     </div>
   </div>
 
-  <mat-card *ngIf="documents.length > 0; else noDocuments">
+  <!-- Document Upload Dialog -->
+  <div *ngIf="showUploadDialog" class="upload-dialog-overlay">
+    <mat-card class="upload-dialog">
+      <mat-card-header>
+        <mat-card-title>Dettagli Documento</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="documentForm" class="document-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Nome Documento</mat-label>
+            <input matInput formControlName="name" placeholder="Inserisci il nome del documento">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Tipo Documento</mat-label>
+            <mat-select formControlName="type">
+              <mat-option value="identity_card">Carta d'Identità</mat-option>
+              <mat-option value="passport">Passaporto</mat-option>
+              <mat-option value="driving_license">Patente</mat-option>
+              <mat-option value="fiscal_code">Codice Fiscale</mat-option>
+              <mat-option value="contract">Contratto</mat-option>
+              <mat-option value="certificate">Certificato</mat-option>
+              <mat-option value="invoice">Fattura</mat-option>
+              <mat-option value="receipt">Ricevuta</mat-option>
+              <mat-option value="other">Altro</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Data di Scadenza (opzionale)</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="expiryDate">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Descrizione (opzionale)</mat-label>
+            <textarea matInput formControlName="description" rows="3" 
+                      placeholder="Inserisci una descrizione del documento"></textarea>
+          </mat-form-field>
+
+          <div class="file-info">
+            <strong>File selezionato:</strong> {{ selectedFile?.name }}<br>
+            <strong>Dimensione:</strong> {{ formatFileSize(selectedFile?.size || 0) }}<br>
+            <strong>Tipo:</strong> {{ selectedFile?.type }}
+          </div>
+        </form>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-button (click)="cancelUpload()">Annulla</button>
+        <button mat-raised-button color="primary" (click)="confirmUpload()" 
+                [disabled]="!documentForm.valid">
+          Carica Documento
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Loading indicator -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <p>Caricamento documenti...</p>
+  </div>
+
+  <mat-card *ngIf="!loading && documents.length > 0; else noDocuments">
     <table mat-table [dataSource]="documents" class="documents-table">
       <!-- Nome Column -->
       <ng-container matColumnDef="name">
@@ -80,15 +147,19 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Azioni</th>
         <td mat-cell *matCellDef="let document" class="actions-cell">
-          <button mat-icon-button color="primary" (click)="downloadDocument(document)" 
+          <button mat-button class="action-btn view-btn" (click)="viewDocument(document)" 
+                  matTooltip="Visualizza">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-button class="action-btn download-btn" (click)="downloadDocument(document)" 
                   matTooltip="Scarica">
             <mat-icon>download</mat-icon>
           </button>
-          <button mat-icon-button color="accent" (click)="editDocument(document)" 
+          <button mat-button class="action-btn edit-btn" (click)="editDocument(document)" 
                   matTooltip="Modifica">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="deleteDocument(document.id!)" 
+          <button mat-button class="action-btn delete-btn" (click)="deleteDocument(document.id!)" 
                   matTooltip="Elimina">
             <mat-icon>delete</mat-icon>
           </button>
@@ -101,12 +172,17 @@
   </mat-card>
 
   <ng-template #noDocuments>
-    <mat-card class="no-documents-card">
+    <mat-card class="no-documents-card" *ngIf="!loading">
       <mat-card-content>
         <div class="no-documents-content">
           <mat-icon class="no-documents-icon">folder_open</mat-icon>
           <h4>Nessun documento caricato</h4>
-          <p>Inizia caricando il primo documento per questa anagrafica.</p>
+          <p *ngIf="personName; else genericMessage">
+            Nessun documento trovato per {{ personName }}.
+          </p>
+          <ng-template #genericMessage>
+            <p>Inizia caricando il primo documento per questa anagrafica.</p>
+          </ng-template>
           <button mat-raised-button color="primary" (click)="fileInput.click()">
             <mat-icon>upload_file</mat-icon>
             Carica il primo documento

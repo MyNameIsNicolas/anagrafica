@@ -1,7 +1,10 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Document, DocumentType } from '../../models';
+import { PersonService } from '../../services/person.service';
 
 @Component({
   selector: 'app-document-manager',
@@ -15,45 +18,226 @@ export class DocumentManagerComponent implements OnInit {
 
   documentTypes = Object.values(DocumentType);
   displayedColumns: string[] = ['name', 'type', 'uploadDate', 'expiryDate', 'status', 'actions'];
+  loading = false;
+  personName = '';
+  
+  // Upload dialog properties
+  showUploadDialog = false;
+  selectedFile: File | null = null;
+  documentForm: FormGroup;
 
   constructor(
+    private route: ActivatedRoute,
+    private personService: PersonService,
+    private formBuilder: FormBuilder,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
-  ) {}
+  ) {
+    this.documentForm = this.formBuilder.group({
+      name: ['', Validators.required],
+      type: [DocumentType.OTHER, Validators.required],
+      expiryDate: [''],
+      description: ['']
+    });
+  }
 
   ngOnInit(): void {
-    this.sortDocuments();
+    // Se personId non è fornito come Input, lo prendiamo dalla route
+    if (!this.personId) {
+      const id = this.route.snapshot.paramMap.get('id');
+      if (id) {
+        this.personId = +id;
+        this.loadPersonDocuments();
+      }
+    } else {
+      this.sortDocuments();
+    }
+  }
+
+  private loadPersonDocuments(): void {
+    if (!this.personId) return;
+    
+    this.loading = true;
+    this.personService.getPersonById(this.personId).subscribe({
+      next: (person) => {
+        if (person) {
+          this.documents = person.documents || [];
+          this.personName = `${person.firstName} ${person.lastName}`;
+          this.sortDocuments();
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento dei documenti:', error);
+        this.snackBar.open('Errore nel caricamento dei documenti', 'Chiudi', {
+          duration: 3000
+        });
+        this.loading = false;
+      }
+    });
   }
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      this.uploadDocument(file);
+      this.selectedFile = file;
+      // Pre-popola il nome del documento dal nome del file
+      const fileName = file.name.split('.')[0];
+      this.documentForm.patchValue({
+        name: fileName
+      });
+      this.showUploadDialog = true;
     }
   }
 
+  cancelUpload(): void {
+    this.showUploadDialog = false;
+    this.selectedFile = null;
+    this.documentForm.reset({
+      name: '',
+      type: DocumentType.OTHER,
+      expiryDate: '',
+      description: ''
+    });
+  }
+
+  confirmUpload(): void {
+    if (this.selectedFile && this.documentForm.valid) {
+      this.uploadDocument(this.selectedFile);
+      this.showUploadDialog = false;
+    }
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
   uploadDocument(file: File): void {
+    // Ottieni i valori dal form
+    const formValues = this.documentForm.value;
+    
     // Simulazione upload - in un'app reale si farebbe una chiamata HTTP
     const newDocument: Document = {
       id: Date.now(), // ID temporaneo
       personId: this.personId,
-      name: file.name.split('.')[0],
-      type: DocumentType.OTHER,
+      name: formValues.name,
+      type: formValues.type,
       fileName: file.name,
+      filePath: `uploads/${this.personId}/${file.name}`, // Percorso simulato
       fileSize: file.size,
       mimeType: file.type,
       uploadDate: new Date(),
+      expiryDate: formValues.expiryDate ? new Date(formValues.expiryDate) : undefined,
+      description: formValues.description || undefined,
       isActive: true,
       createdAt: new Date()
     };
+
+    // Salva il file in memoria per la visualizzazione (solo per demo)
+    this.storeFileForViewing(newDocument.id!, file);
 
     this.documents = [...this.documents, newDocument];
     this.documentsChange.emit(this.documents);
     this.sortDocuments();
 
+    // Reset del form e file selezionato
+    this.selectedFile = null;
+    this.documentForm.reset({
+      name: '',
+      type: DocumentType.OTHER,
+      expiryDate: '',
+      description: ''
+    });
+
     this.snackBar.open('Documento caricato con successo', 'Chiudi', {
       duration: 3000
     });
+  }
+
+  private fileStorage = new Map<number, File>();
+
+  private storeFileForViewing(documentId: number, file: File): void {
+    // Memorizza il file per la visualizzazione successiva
+    this.fileStorage.set(documentId, file);
+  }
+
+  viewDocument(document: Document): void {
+    // Implementazione per visualizzare il documento
+    if (document.fileName) {
+      // Verifica se il documento ha un percorso reale o è un documento caricato
+      if (document.filePath) {
+        // Documento reale caricato - apre il file effettivo
+        this.openRealDocument(document);
+      } else {
+        // Documento mock - usa URL di esempio
+        const documentUrl = this.createDocumentUrl(document);
+        window.open(documentUrl, '_blank');
+      }
+      
+      this.snackBar.open(`Documento aperto: ${document.name}`, 'Chiudi', {
+        duration: 2000
+      });
+      
+      console.log('View document:', document);
+    } else {
+      this.snackBar.open('Documento non disponibile per la visualizzazione', 'Chiudi', {
+        duration: 3000
+      });
+    }
+  }
+
+  private openRealDocument(document: Document): void {
+    // Per documenti reali caricati dall'utente
+    if (document.id && this.fileStorage.has(document.id)) {
+      // Recupera il file originale dalla memoria
+      const file = this.fileStorage.get(document.id)!;
+      const url = URL.createObjectURL(file);
+      window.open(url, '_blank');
+      
+      // Cleanup dell'URL dopo un po'
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    } else if (document.filePath) {
+      // In un'app reale, questo farebbe una chiamata al server per recuperare il file
+      // Per ora mostriamo un messaggio che il file sarebbe recuperato dal server
+      this.snackBar.open('In un\'app reale, il file verrebbe recuperato dal server', 'Chiudi', {
+        duration: 4000
+      });
+      
+      // Simulazione: apri un documento di esempio
+      const documentUrl = this.createDocumentUrl(document);
+      window.open(documentUrl, '_blank');
+    } else {
+      // Fallback per documenti senza percorso
+      this.snackBar.open('File non trovato', 'Chiudi', {
+        duration: 3000
+      });
+    }
+  }
+
+  private createDocumentUrl(document: Document): string {
+    // In un'applicazione reale, questo URL punterebbe al server dove sono archiviati i documenti
+    // Per ora creiamo un URL simulato basato sul tipo di documento
+    const baseUrl = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/';
+    
+    // Simuliamo diversi documenti PDF di esempio
+    switch (document.type) {
+      case 'identity_card':
+        return baseUrl + 'dummy.pdf';
+      case 'passport':
+        return baseUrl + 'dummy.pdf';
+      case 'driving_license':
+        return baseUrl + 'dummy.pdf';
+      case 'contract':
+        return baseUrl + 'dummy.pdf';
+      case 'certificate':
+        return baseUrl + 'dummy.pdf';
+      default:
+        return baseUrl + 'dummy.pdf';
+    }
   }
 
   editDocument(document: Document): void {
