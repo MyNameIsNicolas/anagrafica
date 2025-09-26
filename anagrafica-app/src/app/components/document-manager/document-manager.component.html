@@ -1,0 +1,118 @@
+<div class="document-manager">
+  <div class="header-section">
+    <h3>Archivio Documentale</h3>
+    <div class="upload-section">
+      <input #fileInput type="file" (change)="onFileSelected($event)" style="display: none;" 
+             accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+      <button mat-raised-button color="primary" (click)="fileInput.click()">
+        <mat-icon>upload_file</mat-icon>
+        Carica Documento
+      </button>
+    </div>
+  </div>
+
+  <mat-card *ngIf="documents.length > 0; else noDocuments">
+    <table mat-table [dataSource]="documents" class="documents-table">
+      <!-- Nome Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Nome</th>
+        <td mat-cell *matCellDef="let document">
+          <div class="document-name">
+            <mat-icon class="file-icon">description</mat-icon>
+            <span>{{ document.name }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Tipo Column -->
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>Tipo</th>
+        <td mat-cell *matCellDef="let document">
+          <mat-chip class="type-chip">{{ getDocumentTypeLabel(document.type) }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Data Caricamento Column -->
+      <ng-container matColumnDef="uploadDate">
+        <th mat-header-cell *matHeaderCellDef>Caricato</th>
+        <td mat-cell *matCellDef="let document">
+          {{ document.uploadDate | date:'dd/MM/yyyy' }}
+        </td>
+      </ng-container>
+
+      <!-- Data Scadenza Column -->
+      <ng-container matColumnDef="expiryDate">
+        <th mat-header-cell *matHeaderCellDef>Scadenza</th>
+        <td mat-cell *matCellDef="let document">
+          <span *ngIf="document.expiryDate; else noExpiry">
+            {{ document.expiryDate | date:'dd/MM/yyyy' }}
+          </span>
+          <ng-template #noExpiry>
+            <span class="no-expiry">N/A</span>
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Stato</th>
+        <td mat-cell *matCellDef="let document">
+          <div class="status-indicator">
+            <mat-icon [color]="getDocumentStatusColor(document)" class="status-icon">
+              {{ getDocumentStatusIcon(document) }}
+            </mat-icon>
+            <span *ngIf="isDocumentExpired(document)" class="status-text expired">
+              Scaduto
+            </span>
+            <span *ngIf="isDocumentExpiring(document) && !isDocumentExpired(document)" 
+                  class="status-text expiring">
+              Scade tra {{ getDaysToExpiry(document) }} giorni
+            </span>
+            <span *ngIf="!isDocumentExpiring(document) && !isDocumentExpired(document)" 
+                  class="status-text valid">
+              Valido
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Azioni Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Azioni</th>
+        <td mat-cell *matCellDef="let document" class="actions-cell">
+          <button mat-icon-button color="primary" (click)="downloadDocument(document)" 
+                  matTooltip="Scarica">
+            <mat-icon>download</mat-icon>
+          </button>
+          <button mat-icon-button color="accent" (click)="editDocument(document)" 
+                  matTooltip="Modifica">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteDocument(document.id!)" 
+                  matTooltip="Elimina">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-card>
+
+  <ng-template #noDocuments>
+    <mat-card class="no-documents-card">
+      <mat-card-content>
+        <div class="no-documents-content">
+          <mat-icon class="no-documents-icon">folder_open</mat-icon>
+          <h4>Nessun documento caricato</h4>
+          <p>Inizia caricando il primo documento per questa anagrafica.</p>
+          <button mat-raised-button color="primary" (click)="fileInput.click()">
+            <mat-icon>upload_file</mat-icon>
+            Carica il primo documento
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </ng-template>
+</div>

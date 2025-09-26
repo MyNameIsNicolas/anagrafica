@@ -1,12 +1,19 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PersonListComponent } from './components/person-list/person-list.component';
 import { PersonDetailComponent } from './components/person-detail/person-detail.component';
 import { PersonFormComponent } from './components/person-form/person-form.component';
+import { MatChipsModule } from '@angular/material/chips';
+import { DocumentManagerComponent } from './components/document-manager/document-manager.component';
+import { ReminderSystemComponent } from './components/reminder-system/reminder-system.component';
+import { FilterPipe } from './pipes/filter.pipe';
+import { RelationshipManagerComponent } from './components/relationship-manager/relationship-manager.component';
+import { ReportsComponent } from './components/reports/reports.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // Angular Material Modules
@@ -25,25 +32,34 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTabsModule } from '@angular/material/tabs';
+
+// ng2-charts - Rimosso temporaneamente
+// import { ChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
     AppComponent,
     PersonListComponent,
     PersonDetailComponent,
-    PersonFormComponent
+    PersonFormComponent,
+    DocumentManagerComponent,
+    ReminderSystemComponent,
+    FilterPipe,
+    RelationshipManagerComponent,
+    ReportsComponent
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,
     ReactiveFormsModule,
     FormsModule,
     BrowserAnimationsModule,
-    // Material Modules
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
@@ -59,12 +75,16 @@ import { MatMenuModule } from '@angular/material/menu';
     MatProgressSpinnerModule,
     MatDividerModule,
     MatListModule,
-    MatChipsModule,
     MatTooltipModule,
+    MatSlideToggleModule,
     MatExpansionModule,
-    MatMenuModule
+    MatMenuModule,
+    MatChipsModule,
+    MatTabsModule
+    // ChartsModule - Rimosso temporaneamente
   ],
-  providers: [],
+  providers: [
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

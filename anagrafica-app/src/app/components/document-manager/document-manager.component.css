@@ -1,0 +1,135 @@
+.document-manager {
+  padding: 16px;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header-section h3 {
+  margin: 0;
+  color: #333;
+  font-weight: 500;
+}
+
+.upload-section button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.documents-table {
+  width: 100%;
+}
+
+.document-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-icon {
+  color: #666;
+  font-size: 20px;
+}
+
+.type-chip {
+  font-size: 12px;
+  min-height: 24px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-icon {
+  font-size: 20px;
+}
+
+.status-text {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-text.expired {
+  color: #d32f2f;
+}
+
+.status-text.expiring {
+  color: #f57c00;
+}
+
+.status-text.valid {
+  color: #388e3c;
+}
+
+.no-expiry {
+  color: #999;
+  font-style: italic;
+}
+
+.actions-cell {
+  width: 120px;
+}
+
+.actions-cell button {
+  margin-right: 4px;
+}
+
+.no-documents-card {
+  margin-top: 16px;
+}
+
+.no-documents-content {
+  text-align: center;
+  padding: 32px;
+}
+
+.no-documents-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #ccc;
+  margin-bottom: 16px;
+}
+
+.no-documents-content h4 {
+  margin: 16px 0 8px 0;
+  color: #666;
+}
+
+.no-documents-content p {
+  color: #999;
+  margin-bottom: 24px;
+}
+
+.no-documents-content button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .header-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  
+  .documents-table {
+    font-size: 14px;
+  }
+  
+  .actions-cell button {
+    padding: 8px;
+  }
+}

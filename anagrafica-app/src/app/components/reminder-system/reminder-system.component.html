@@ -1,0 +1,142 @@
+<div class="reminder-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>schedule</mat-icon>
+        Sistema Scadenziario
+      </mat-card-title>
+      <mat-card-subtitle>
+        Documenti in scadenza e promemoria
+      </mat-card-subtitle>
+      <div class="header-actions">
+        <button mat-icon-button (click)="refreshReminders()" title="Aggiorna promemoria">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Statistiche rapide -->
+      <div class="stats-container" *ngIf="reminders.length > 0">
+        <div class="stat-item critical">
+          <mat-icon>error</mat-icon>
+          <span class="stat-number">{{ (reminders | filter: 'urgencyLevel' : 'critical').length }}</span>
+          <span class="stat-label">Critici</span>
+        </div>
+        <div class="stat-item high">
+          <mat-icon>warning</mat-icon>
+          <span class="stat-number">{{ (reminders | filter: 'urgencyLevel' : 'high').length }}</span>
+          <span class="stat-label">Urgenti</span>
+        </div>
+        <div class="stat-item medium">
+          <mat-icon>info</mat-icon>
+          <span class="stat-number">{{ (reminders | filter: 'urgencyLevel' : 'medium').length }}</span>
+          <span class="stat-label">Medi</span>
+        </div>
+        <div class="stat-item low">
+          <mat-icon>schedule</mat-icon>
+          <span class="stat-number">{{ (reminders | filter: 'urgencyLevel' : 'low').length }}</span>
+          <span class="stat-label">Bassi</span>
+        </div>
+      </div>
+
+      <!-- Tabella promemoria -->
+      <div class="table-container" *ngIf="reminders.length > 0; else noReminders">
+        <table mat-table [dataSource]="reminders" class="reminders-table">
+          
+          <!-- Colonna Persona -->
+          <ng-container matColumnDef="personName">
+            <th mat-header-cell *matHeaderCellDef>Persona</th>
+            <td mat-cell *matCellDef="let reminder">
+              <div class="person-info">
+                <mat-icon>person</mat-icon>
+                <span>{{ reminder.personName }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonna Nome Documento -->
+          <ng-container matColumnDef="documentName">
+            <th mat-header-cell *matHeaderCellDef>Documento</th>
+            <td mat-cell *matCellDef="let reminder">
+              <div class="document-info">
+                <mat-icon>description</mat-icon>
+                <span>{{ reminder.document.name }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonna Tipo Documento -->
+          <ng-container matColumnDef="documentType">
+            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+            <td mat-cell *matCellDef="let reminder">
+              <mat-chip-set>
+                <mat-chip>{{ reminder.document.type }}</mat-chip>
+              </mat-chip-set>
+            </td>
+          </ng-container>
+
+          <!-- Colonna Data Scadenza -->
+          <ng-container matColumnDef="expiryDate">
+            <th mat-header-cell *matHeaderCellDef>Scadenza</th>
+            <td mat-cell *matCellDef="let reminder">
+              <div class="date-info">
+                <mat-icon>event</mat-icon>
+                <span>{{ reminder.document.expiryDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonna Giorni Rimanenti -->
+          <ng-container matColumnDef="daysLeft">
+            <th mat-header-cell *matHeaderCellDef>Giorni Rimanenti</th>
+            <td mat-cell *matCellDef="let reminder">
+              <div class="days-left" [ngClass]="reminder.urgencyLevel">
+                <mat-icon>{{ getUrgencyIcon(reminder.urgencyLevel) }}</mat-icon>
+                <span>{{ formatDaysLeft(reminder.daysUntilExpiry) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonna Urgenza -->
+          <ng-container matColumnDef="urgency">
+            <th mat-header-cell *matHeaderCellDef>Urgenza</th>
+            <td mat-cell *matCellDef="let reminder">
+              <mat-chip-set>
+                <mat-chip [color]="getUrgencyColor(reminder.urgencyLevel)" selected>
+                  {{ reminder.urgencyLevel | titlecase }}
+                </mat-chip>
+              </mat-chip-set>
+            </td>
+          </ng-container>
+
+          <!-- Colonna Azioni -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Azioni</th>
+            <td mat-cell *matCellDef="let reminder">
+              <button mat-icon-button (click)="viewDocument(reminder)" title="Visualizza documento">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button (click)="markAsHandled(reminder)" title="Marca come gestito">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              [ngClass]="'urgency-' + row.urgencyLevel"></tr>
+        </table>
+      </div>
+
+      <!-- Messaggio quando non ci sono promemoria -->
+      <ng-template #noReminders>
+        <div class="no-reminders">
+          <mat-icon>check_circle</mat-icon>
+          <h3>Nessun promemoria</h3>
+          <p>Non ci sono documenti in scadenza nei prossimi 60 giorni.</p>
+        </div>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+</div>

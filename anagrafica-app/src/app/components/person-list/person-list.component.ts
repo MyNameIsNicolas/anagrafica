@@ -13,7 +13,7 @@ export class PersonListComponent implements OnInit {
   persons: Person[] = [];
   filteredPersons: Person[] = [];
   searchTerm: string = '';
-  displayedColumns: string[] = ['firstName', 'lastName', 'email', 'phone', 'actions'];
+  displayedColumns: string[] = ['firstName', 'lastName', 'email', 'phone', 'status', 'actions'];
 
   constructor(
     private personService: PersonService,
@@ -51,22 +51,27 @@ export class PersonListComponent implements OnInit {
     this.router.navigate(['/persons/new']);
   }
 
-  deletePerson(id: number): void {
-    if (confirm('Sei sicuro di voler eliminare questa persona?')) {
-      this.personService.deletePerson(id).subscribe({
-        next: () => {
-          this.snackBar.open('Persona eliminata con successo', 'Chiudi', {
-            duration: 3000
-          });
-          this.loadPersons();
-        },
-        error: (error) => {
-          this.snackBar.open('Errore nell\'eliminazione della persona', 'Chiudi', {
-            duration: 3000
-          });
-        }
+  deletePerson(person: Person): void {
+    if (confirm(`Sei sicuro di voler eliminare ${person.firstName} ${person.lastName}?`)) {
+      this.personService.deletePerson(person.id!).subscribe(() => {
+        console.log('Persona eliminata con successo');
       });
     }
+  }
+
+  viewDocuments(person: Person): void {
+    this.router.navigate(['/persons', person.id, 'documents']);
+  }
+
+  viewRelationships(person: Person): void {
+    this.router.navigate(['/persons', person.id, 'relationships']);
+  }
+
+  toggleActiveStatus(person: Person): void {
+    const updatedPerson = { ...person, isActive: !person.isActive };
+    this.personService.updatePerson(updatedPerson.id!, updatedPerson).subscribe(() => {
+      console.log(`Stato ${updatedPerson.isActive ? 'attivato' : 'disattivato'} per ${person.firstName} ${person.lastName}`);
+    });
   }
 
   onSearchChange(event: any): void {
