@@ -248,7 +248,13 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
+.primary-chip {
+  background-color: #4caf50 !important;
+  color: white !important;
+  font-size: 11px;
+  height: 20px;
+  margin-left: 8px;
+}
 @media (max-width: 768px) {
   .person-form-container {
     gap: 16px;

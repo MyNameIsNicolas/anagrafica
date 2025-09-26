@@ -101,14 +101,16 @@
         <div formArrayName="addresses">
           <mat-expansion-panel *ngFor="let address of addresses.controls; let i = index" 
                                [formGroupName]="i" 
-                               class="address-panel">
+                               class="address-panel"
+                               #addressPanel>
             <mat-expansion-panel-header>
               <mat-panel-title>
-                <mat-icon>home</mat-icon>
+                <mat-icon>location_on</mat-icon>
                 Indirizzo {{ i + 1 }}
               </mat-panel-title>
               <mat-panel-description>
-                {{ address.get('street')?.value || 'Nuovo indirizzo' }}
+                {{ address.get('street')?.value || 'Nuovo indirizzo' }}, {{ address.get('city')?.value }}
+                <mat-chip *ngIf="address.get('isPrimary')?.value" class="primary-chip">Principale</mat-chip>
               </mat-panel-description>
             </mat-expansion-panel-header>
 
@@ -148,7 +150,21 @@
                 <input matInput formControlName="country" placeholder="Italia">
               </mat-form-field>
 
+              <div class="form-row">
+                <div class="checkbox-field">
+                  <mat-checkbox formControlName="isPrimary" 
+                                (change)="onPrimaryAddressChange(i, $event)">
+                    Indirizzo principale
+                  </mat-checkbox>
+                </div>
+              </div>
+
               <div class="panel-actions">
+                <button mat-raised-button color="primary" type="button" 
+                        (click)="saveAddress(i, addressPanel)">
+                  <mat-icon>save</mat-icon>
+                  Salva Indirizzo
+                </button>
                 <button mat-button color="warn" type="button" 
                         (click)="removeAddress(i)"
                         [disabled]="addresses.length === 1">
@@ -190,7 +206,8 @@
         <div formArrayName="contacts">
           <mat-expansion-panel *ngFor="let contact of contacts.controls; let i = index" 
                                [formGroupName]="i" 
-                               class="contact-panel">
+                               class="contact-panel"
+                               #contactPanel>
             <mat-expansion-panel-header>
               <mat-panel-title>
                 <mat-icon>{{ getContactIcon(contact.get('type')?.value) }}</mat-icon>
@@ -241,13 +258,19 @@
                   <input matInput formControlName="label" placeholder="Email personale">
                 </mat-form-field>
                 <div class="checkbox-field">
-                  <mat-checkbox formControlName="isPrimary">
-                    Contatto principale
+                  <mat-checkbox formControlName="isPrimary"
+                                (change)="onPrimaryContactChange(i, $event)">
+                    Contatto principale per questo tipo
                   </mat-checkbox>
                 </div>
               </div>
 
               <div class="panel-actions">
+                <button mat-raised-button color="primary" type="button" 
+                        (click)="saveContact(i, contactPanel)">
+                  <mat-icon>save</mat-icon>
+                  Salva Contatto
+                </button>
                 <button mat-button color="warn" type="button" 
                         (click)="removeContact(i)"
                         [disabled]="contacts.length === 1">

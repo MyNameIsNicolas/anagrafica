@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PersonService } from '../../services/person.service';
 import { Person, PersonRelationship, RelationshipType } from '../../models';
@@ -19,11 +20,15 @@ export class RelationshipManagerComponent implements OnInit {
   relationships: PersonRelationship[] = [];
   persons: Person[] = [];
   filteredPersons: Observable<Person[]> = of([]);
+  loading = false;
+  personName = '';
+  editingRelationship: PersonRelationship | null = null;
   
   relationshipTypes = Object.values(RelationshipType);
   displayedColumns: string[] = ['relatedPerson', 'relationshipType', 'description', 'startDate', 'endDate', 'status', 'actions'];
 
   constructor(
+    private route: ActivatedRoute,
     private fb: FormBuilder,
     private personService: PersonService,
     private snackBar: MatSnackBar,
@@ -40,9 +45,34 @@ export class RelationshipManagerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadPersons();
-    this.loadRelationships();
-    this.setupPersonFilter();
+    // Se personId non è fornito come Input, lo prendiamo dalla route
+    if (!this.personId) {
+      const id = this.route.snapshot.paramMap.get('id');
+      if (id) {
+        this.personId = +id;
+      }
+    }
+    
+    if (this.personId) {
+      this.loadPersons();
+      this.loadRelationships();
+      this.setupPersonFilter();
+      this.loadPersonName();
+    } else {
+      this.snackBar.open('ID persona non trovato', 'Chiudi', {
+        duration: 3000
+      });
+    }
+  }
+
+  private loadPersonName(): void {
+    if (this.personId) {
+      this.personService.getPersonById(this.personId).subscribe(person => {
+        if (person) {
+          this.personName = `${person.firstName} ${person.lastName}`;
+        }
+      });
+    }
   }
 
   private loadPersons(): void {
@@ -84,18 +114,47 @@ export class RelationshipManagerComponent implements OnInit {
     if (this.relationshipForm.valid && this.personId) {
       const formValue = this.relationshipForm.value;
       
-      const newRelationship: Omit<PersonRelationship, 'id' | 'createdAt' | 'updatedAt'> = {
-        personId: this.personId,
-        relatedPersonId: formValue.relatedPersonId,
-        relationshipType: formValue.relationshipType,
-        description: formValue.description,
-        startDate: formValue.startDate,
-        endDate: formValue.endDate,
-        isActive: formValue.isActive
-      };
+      if (this.editingRelationship) {
+        // Modalità modifica
+        this.updateRelationship(formValue);
+      } else {
+        // Modalità aggiunta
+        const newRelationship: Omit<PersonRelationship, 'id' | 'createdAt' | 'updatedAt'> = {
+          personId: this.personId,
+          relatedPersonId: formValue.relatedPersonId,
+          relationshipType: formValue.relationshipType,
+          description: formValue.description,
+          startDate: formValue.startDate,
+          endDate: formValue.endDate,
+          isActive: formValue.isActive
+        };
 
-      // Simula l'aggiunta della relazione (in un'app reale, questo sarebbe un servizio)
-      this.addRelationship(newRelationship);
+        this.addRelationship(newRelationship);
+      }
+    }
+  }
+
+  private updateRelationship(formValue: any): void {
+    if (!this.editingRelationship) return;
+
+    const updatedRelationship: PersonRelationship = {
+      ...this.editingRelationship,
+      relatedPersonId: formValue.relatedPersonId,
+      relationshipType: formValue.relationshipType,
+      description: formValue.description,
+      startDate: formValue.startDate,
+      endDate: formValue.endDate,
+      isActive: formValue.isActive,
+      updatedAt: new Date()
+    };
+
+    const index = this.relationships.findIndex(r => r.id === this.editingRelationship!.id);
+    if (index !== -1) {
+      this.relationships[index] = updatedRelationship;
+      this.snackBar.open('Relazione aggiornata con successo', 'Chiudi', {
+        duration: 3000
+      });
+      this.cancelEdit();
     }
   }
 
@@ -119,6 +178,7 @@ export class RelationshipManagerComponent implements OnInit {
   }
 
   editRelationship(relationship: PersonRelationship): void {
+    this.editingRelationship = relationship;
     this.relationshipForm.patchValue({
       relatedPersonId: relationship.relatedPersonId,
       relationshipType: relationship.relationshipType,
@@ -127,16 +187,33 @@ export class RelationshipManagerComponent implements OnInit {
       endDate: relationship.endDate,
       isActive: relationship.isActive
     });
+
+    this.snackBar.open('Modalità modifica attivata', 'Chiudi', {
+      duration: 2000
+    });
+  }
+
+  cancelEdit(): void {
+    this.editingRelationship = null;
+    this.clearForm();
   }
 
   deleteRelationship(relationship: PersonRelationship): void {
     const relatedPerson = this.getPersonName(relationship.relatedPersonId);
-    if (confirm(`Sei sicuro di voler eliminare la relazione con ${relatedPerson}?`)) {
-      this.relationships = this.relationships.filter(r => r.id !== relationship.id);
-      this.snackBar.open('Relazione eliminata con successo', 'Chiudi', {
-        duration: 3000
-      });
-    }
+    
+    setTimeout(() => {
+      if (confirm(`Sei sicuro di voler eliminare la relazione con ${relatedPerson}?`)) {
+        this.relationships = this.relationships.filter(r => r.id !== relationship.id);
+        this.snackBar.open('Relazione eliminata con successo', 'Chiudi', {
+          duration: 3000
+        });
+        
+        // Se stavamo modificando questa relazione, annulla la modifica
+        if (this.editingRelationship && this.editingRelationship.id === relationship.id) {
+          this.cancelEdit();
+        }
+      }
+    }, 0);
   }
 
   toggleRelationshipStatus(relationship: PersonRelationship): void {
@@ -189,10 +266,23 @@ export class RelationshipManagerComponent implements OnInit {
   }
 
   clearForm(): void {
+    this.editingRelationship = null;
     this.relationshipForm.reset({
       isActive: true,
       startDate: new Date()
     });
+  }
+
+  isEditing(): boolean {
+    return this.editingRelationship !== null;
+  }
+
+  getFormButtonText(): string {
+    return this.isEditing() ? 'Aggiorna Relazione' : 'Aggiungi Relazione';
+  }
+
+  getFormButtonIcon(): string {
+    return this.isEditing() ? 'update' : 'add';
   }
 
   // Metodo per visualizzare il profilo della persona collegata

@@ -112,7 +112,7 @@
               <mat-icon>{{ person.isActive ? 'visibility_off' : 'visibility' }}</mat-icon>
               <span>{{ person.isActive ? 'Disattiva' : 'Attiva' }}</span>
             </button>
-              <button mat-menu-item (click)="deletePerson(person.id!)">
+              <button mat-menu-item (click)="deletePerson(person)">
                 <mat-icon color="warn">delete</mat-icon>
                 <span>Elimina</span>
               </button>

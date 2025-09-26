@@ -4,8 +4,28 @@
   margin: 0 auto;
 }
 
-.mat-card-header {
-  margin-bottom: 16px;
+.person-name {
+  color: #666;
+  font-weight: normal;
+  font-size: 0.9em;
+}
+
+.actions-cell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.actions-cell button {
+  margin: 0 2px;
+}
+
+.editing {
+  background-color: #fff3e0 !important;
+  border-radius: 50%;
+}
+
+.editing mat-icon {
+  color: #f57c00 !important;
 }
 
 .mat-card-title {

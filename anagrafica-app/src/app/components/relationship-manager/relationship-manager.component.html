@@ -4,6 +4,7 @@
       <mat-card-title>
         <mat-icon>people</mat-icon>
         Gestione Relazioni
+        <span *ngIf="personName" class="person-name"> - {{ personName }}</span>
       </mat-card-title>
       <mat-card-subtitle>
         Collegamenti e relazioni tra anagrafiche
@@ -15,9 +16,12 @@
       <mat-expansion-panel class="add-relationship-panel">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            <mat-icon>add</mat-icon>
-            Aggiungi Nuova Relazione
+            <mat-icon>{{ isEditing() ? 'edit' : 'add' }}</mat-icon>
+            {{ isEditing() ? 'Modifica Relazione' : 'Aggiungi Nuova Relazione' }}
           </mat-panel-title>
+          <mat-panel-description *ngIf="isEditing()">
+            Stai modificando la relazione con {{ getPersonName(editingRelationship!.relatedPersonId) }}
+          </mat-panel-description>
         </mat-expansion-panel-header>
 
         <form [formGroup]="relationshipForm" (ngSubmit)="onSubmit()" class="relationship-form">
@@ -84,12 +88,16 @@
           <div class="form-actions">
             <button mat-raised-button color="primary" type="submit" 
                     [disabled]="relationshipForm.invalid">
-              <mat-icon>add</mat-icon>
-              Aggiungi Relazione
+              <mat-icon>{{ getFormButtonIcon() }}</mat-icon>
+              {{ getFormButtonText() }}
             </button>
-            <button mat-button type="button" (click)="clearForm()">
+            <button mat-button type="button" (click)="clearForm()" *ngIf="!isEditing()">
               <mat-icon>clear</mat-icon>
               Pulisci
+            </button>
+            <button mat-button type="button" (click)="cancelEdit()" *ngIf="isEditing()">
+              <mat-icon>cancel</mat-icon>
+              Annulla Modifica
             </button>
           </div>
         </form>
@@ -175,21 +183,23 @@
             <!-- Colonna Azioni -->
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Azioni</th>
-              <td mat-cell *matCellDef="let relationship">
-                <button mat-icon-button (click)="viewRelatedPerson(relationship.relatedPersonId)" 
-                        title="Visualizza profilo">
+              <td mat-cell *matCellDef="let relationship" class="actions-cell">
+                <button mat-icon-button color="primary" (click)="viewRelatedPerson(relationship.relatedPersonId)" 
+                        matTooltip="Visualizza profilo">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button mat-icon-button (click)="editRelationship(relationship)" 
-                        title="Modifica relazione">
+                <button mat-icon-button color="accent" (click)="editRelationship(relationship)" 
+                        matTooltip="Modifica relazione"
+                        [class.editing]="editingRelationship?.id === relationship.id">
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button mat-icon-button (click)="toggleRelationshipStatus(relationship)" 
-                        [title]="relationship.isActive ? 'Disattiva' : 'Attiva'">
+                        [color]="relationship.isActive ? 'primary' : 'warn'"
+                        [matTooltip]="relationship.isActive ? 'Disattiva relazione' : 'Attiva relazione'">
                   <mat-icon>{{ relationship.isActive ? 'toggle_on' : 'toggle_off' }}</mat-icon>
                 </button>
-                <button mat-icon-button (click)="deleteRelationship(relationship)" 
-                        title="Elimina relazione" class="delete-action">
+                <button mat-icon-button color="warn" (click)="deleteRelationship(relationship)" 
+                        matTooltip="Elimina relazione">
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>

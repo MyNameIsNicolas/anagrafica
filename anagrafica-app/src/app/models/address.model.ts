@@ -6,4 +6,5 @@ export interface Address {
   province: string;
   country: string;
   type: 'home' | 'work' | 'other';
+  isPrimary?: boolean;
 }

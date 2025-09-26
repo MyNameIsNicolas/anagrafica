@@ -69,15 +69,23 @@ export class PersonService {
 
   // Elimina una persona
   deletePerson(id: number): Observable<boolean> {
-    const currentPersons = this.personsSubject.value;
-    const filteredPersons = currentPersons.filter(p => p.id !== id);
-    
-    if (filteredPersons.length < currentPersons.length) {
-      this.personsSubject.next(filteredPersons);
-      return of(true);
+    try {
+      const currentPersons = this.personsSubject.value;
+      const initialLength = currentPersons.length;
+      const filteredPersons = currentPersons.filter(p => p.id !== id);
+      
+      if (filteredPersons.length < initialLength) {
+        this.personsSubject.next(filteredPersons);
+        console.log(`Persona con ID ${id} eliminata. Persone rimanenti: ${filteredPersons.length}`);
+        return of(true);
+      }
+      
+      console.log(`Persona con ID ${id} non trovata`);
+      return of(false);
+    } catch (error) {
+      console.error('Errore durante l\'eliminazione:', error);
+      return of(false);
     }
-    
-    return of(false);
   }
 
   // Metodi per la gestione dei documenti

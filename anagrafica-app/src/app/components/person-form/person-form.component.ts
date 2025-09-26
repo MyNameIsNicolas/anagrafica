@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, ViewChildren, QueryList, AfterVie
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { PersonService } from '../../services';
 import { Person, Address, Contact } from '../../models';
 
@@ -23,6 +24,7 @@ export class PersonFormComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
     private personService: PersonService,
+    private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef
   ) {
     this.personForm = this.createForm();
@@ -43,7 +45,7 @@ export class PersonFormComponent implements OnInit, AfterViewInit {
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       lastName: ['', [Validators.required, Validators.minLength(2)]],
       dateOfBirth: [''],
-      fiscalCode: ['', [Validators.pattern(/^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$/)]],
+      fiscalCode: ['', [Validators.pattern(/^[A-Za-z]{6}[0-9]{2}[A-Za-z][0-9]{2}[A-Za-z][0-9]{3}[A-Za-z]$/)]],
       gender: [''],
       profession: [''],
       notes: [''],
@@ -101,7 +103,8 @@ export class PersonFormComponent implements OnInit, AfterViewInit {
       postalCode: [address?.postalCode || '', Validators.required],
       province: [address?.province || '', Validators.required],
       country: [address?.country || 'Italia', Validators.required],
-      type: [address?.type || 'home', Validators.required]
+      type: [address?.type || 'home', Validators.required],
+      isPrimary: [address?.isPrimary || false]
     });
   }
 
@@ -112,6 +115,36 @@ export class PersonFormComponent implements OnInit, AfterViewInit {
       label: [contact?.label || ''],
       isPrimary: [contact?.isPrimary || false]
     });
+  }
+
+  // Gestione contatti principali
+  onPrimaryContactChange(contactIndex: number, event: any): void {
+    const isPrimary = event.checked;
+    if (isPrimary) {
+      // Se questo contatto diventa principale, rimuovi il flag da tutti gli altri dello stesso tipo
+      const currentType = this.contacts.at(contactIndex).get('type')?.value;
+      
+      this.contacts.controls.forEach((contact, index) => {
+        if (index !== contactIndex && contact.get('type')?.value === currentType) {
+          contact.get('isPrimary')?.setValue(false);
+        }
+      });
+    }
+  }
+
+  // Gestione indirizzi principali
+  onPrimaryAddressChange(addressIndex: number, event: any): void {
+    const isPrimary = event.checked;
+    if (isPrimary) {
+      // Se questo indirizzo diventa principale, rimuovi il flag da tutti gli altri dello stesso tipo
+      const currentType = this.addresses.at(addressIndex).get('type')?.value;
+      
+      this.addresses.controls.forEach((address, index) => {
+        if (index !== addressIndex && address.get('type')?.value === currentType) {
+          address.get('isPrimary')?.setValue(false);
+        }
+      });
+    }
   }
 
   ngAfterViewInit(): void {
@@ -163,6 +196,36 @@ export class PersonFormComponent implements OnInit, AfterViewInit {
     this.contacts.removeAt(index);
   }
 
+  saveAddress(index: number, panel: MatExpansionPanel): void {
+    const addressGroup = this.addresses.at(index);
+    if (addressGroup.valid) {
+      this.snackBar.open('Indirizzo salvato con successo', 'Chiudi', {
+        duration: 2000
+      });
+      // Chiudi l'accordion dopo il salvataggio
+      panel.close();
+    } else {
+      this.snackBar.open('Compila tutti i campi obbligatori dell\'indirizzo', 'Chiudi', {
+        duration: 3000
+      });
+    }
+  }
+
+  saveContact(index: number, panel: MatExpansionPanel): void {
+    const contactGroup = this.contacts.at(index);
+    if (contactGroup.valid) {
+      this.snackBar.open('Contatto salvato con successo', 'Chiudi', {
+        duration: 2000
+      });
+      // Chiudi l'accordion dopo il salvataggio
+      panel.close();
+    } else {
+      this.snackBar.open('Compila tutti i campi obbligatori del contatto', 'Chiudi', {
+        duration: 3000
+      });
+    }
+  }
+
   onSubmit(): void {
     if (this.personForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
@@ -170,7 +233,8 @@ export class PersonFormComponent implements OnInit, AfterViewInit {
       
       const person: Person = {
         ...formValue,
-        dateOfBirth: formValue.dateOfBirth ? new Date(formValue.dateOfBirth) : undefined
+        dateOfBirth: formValue.dateOfBirth ? new Date(formValue.dateOfBirth) : undefined,
+        fiscalCode: formValue.fiscalCode ? formValue.fiscalCode.toUpperCase() : undefined
       };
 
       if (this.isEditMode && this.personId) {
@@ -222,7 +286,12 @@ export class PersonFormComponent implements OnInit, AfterViewInit {
     if (field?.errors) {
       if (field.errors['required']) return 'Campo obbligatorio';
       if (field.errors['minlength']) return `Minimo ${field.errors['minlength'].requiredLength} caratteri`;
-      if (field.errors['pattern']) return 'Formato non valido';
+      if (field.errors['pattern']) {
+        if (fieldName === 'fiscalCode') {
+          return 'Il codice fiscale deve avere 16 caratteri (es. RSSMRA85C15H501Z)';
+        }
+        return 'Formato non valido';
+      }
     }
     return '';
   }
